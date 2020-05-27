@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="690a6e82-a4fd-4f8b-a259-e6358f9f187a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="22e7411f-63db-4539-b644-c9cf30a277ac" >
+		<db:my-sql-connection host="mudb.learn.mulesoft.com" port="3306" user="mule" password="mule" database="training" />
+	</db:config>
+	<flow name="getflights" doc:id="2aced557-9fec-4651-99b5-3a36611176ad" >
+		<db:select doc:name="Select" doc:id="6222a20d-8903-43ee-a53c-13b056e7bfe5" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM american]]></db:sql>
+		</db:select>
+		<flow-ref doc:name="getflights" doc:id="839152d5-12c1-4af5-b826-fc1d0ec38752" name="getflights" targetValue="payload"/>
+	</flow>
+	<flow name="getflightsbyID" doc:id="cf460fff-9baa-4208-8030-49ed32e683dc" >
+		<db:select doc:name="Copy_of_Select" doc:id="89e8a2a4-a21b-4842-b09f-15bc63fb1a67" config-ref="Database_Config" >
+			<db:sql ><![CDATA[SELECT * FROM american WHERE ID=:ID]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'ID' : attributes.uriParams.ID}]]]></db:input-parameters>
+		</db:select>
+		<flow-ref doc:name="getflightsbyID" doc:id="344564ec-fb5d-465a-b0e9-878edc96474e" name="getflightsbyID"/>
+	</flow>
+	<flow name="postFlight" doc:id="5f44f780-56da-4627-8010-e876a3dfac6b" >
+		<set-payload value='{"message": "Flight added (but not really)"}' doc:name="Set Payload" doc:id="a6ec5f6c-eeaa-4eca-9878-27e0cc391e5a" />
+	</flow>
+</mule>
